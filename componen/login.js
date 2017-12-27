@@ -9,7 +9,10 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
-  AsyncStorage
+  AsyncStorage,
+  ScrollView,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 import * as firebase from 'firebase';
@@ -22,12 +25,59 @@ export default class Login extends Component {
       email : null,
       password:null,
       uid:null,
+      loading : true,
+      modalLoading : false
     };
+
+    AsyncStorage.multiGet(["email", "password"]).then((data)=>{
+      var email = data[0][1];
+      if(email != null){
+        this.setState({
+          modalLoading : true
+        });
+        firebase.auth().signInWithEmailAndPassword(data[0][1],data[1][1]).then(()=>{
+          var userId = firebase.auth().currentUser.uid;
+          var database = firebase.database().ref("admin/"+userId+"");
+          database.on("value", (snapshot)=>{
+            AsyncStorage.multiSet([
+              ["username", snapshot.val().username],
+              ["uri", snapshot.val().uri]
+            ]);
+          });
+          this.setState({
+            modalLoading : false
+          });
+          const { navigate } = this.props.navigation;
+          navigate('Dashboard');
+        }).catch(error=>{
+          alert(error);
+        });
+      }
+    });
+
   }
-  login(){
+
+  login=()=>{
+   
      firebase.auth().signInWithEmailAndPassword(this.state.email,this.state.password).then(() => {
-      alert('login succuess');
-     const { navigate } = this.props.navigation;
+      this.setState({
+        modalLoading : true
+      });
+      var userId = firebase.auth().currentUser.uid;
+      var database = firebase.database().ref("admin/"+userId+"");
+      database.on("value",(snapshot)=>{
+        AsyncStorage.multiSet([
+          ["email", this.state.email],
+          ["password", this.state.password],
+          ["userId", userId],
+          ["username", snapshot.val().username],
+          ["uri", snapshot.val().uri]
+        ]);
+      });
+      this.setState({
+        modalLoading : false
+      });
+      const { navigate } = this.props.navigation;
       navigate('Dashboard');
     }).catch((error) => {
       alert("error " + error.message );
@@ -43,7 +93,32 @@ export default class Login extends Component {
      const { navigate } = this.props.navigation;
   
     return (
+      <ScrollView>
+         <Modal
+              animationType = {"fade"}
+              transparent   = {true}
+              visible       = {this.state.modalLoading} onRequestClose ={()=>{console.log('closed')}}
+          >
+            <View style={{height : height, width : null,  backgroundColor: 'rgba(0, 0, 0, 0.56)'}}>
 
+              <View style={{
+                  backgroundColor : 'white',
+                  borderRadius: 5,
+                  marginLeft: '25%',
+                  height: 100,
+                  width: '50%',
+                  alignItems: 'center',
+                  marginTop: '70%'
+              }} >
+                  <ActivityIndicator
+                      animating={this.state.loading}
+                      color="#bc2b78"
+                      size = 'large'
+                      style={{marginTop:30}}
+                  />
+              </View>
+            </View>
+          </Modal>
         <View style={styles.container}>
             <Image source={require('./../img/lol.jpg')} style={styles.backgroundImage}>
 
@@ -93,6 +168,7 @@ export default class Login extends Component {
          </View>
             </Image>
         </View>
+        </ScrollView>
     );
   }
 }

@@ -21,12 +21,12 @@ import { StackNavigator } from 'react-navigation';
 import * as firebase from 'firebase';
 
 const config = {
-    apiKey: "AIzaSyA-IY13VJofzFp3-1IPwtI47d6JeJimX_Y",
-    authDomain: "senorti-d95fc.firebaseapp.com",
-    databaseURL: "https://senorti-d95fc.firebaseio.com",
-    projectId: "senorti-d95fc",
-    storageBucket: "",
-    messagingSenderId: "887734914733"
+  apiKey: "AIzaSyA-IY13VJofzFp3-1IPwtI47d6JeJimX_Y",
+  authDomain: "senorti-d95fc.firebaseapp.com",
+  databaseURL: "https://senorti-d95fc.firebaseio.com",
+  projectId: "senorti-d95fc",
+  storageBucket: "senorti-d95fc.appspot.com",
+  messagingSenderId: "887734914733"
   };   
   const firebaseApp = firebase.initializeApp(config);
 
@@ -35,9 +35,10 @@ var{width,height}=Dimensions.get('window');
 import Dashboard from './componen/dashboard';
 import Signin from './componen/signin';
 import Login from './componen/login';
-import Loginjur from './componen/loginjur';
-import Signinjur from './componen/signinjur';
-import Dashboardjur from './componen/dashboardjur';
+import Inputnews from './componen/inputnews';
+import Profil from './componen/profil';
+import Viewnews from './componen/viewnews';
+import Senstreet from './componen/senstreet';
 export default class senorti extends Component {
   static navigationOptions = {
       header : null
@@ -59,11 +60,13 @@ export default class senorti extends Component {
   }
 }
 const senortiNavigation = StackNavigator({
+  
   Home : {screen : Login},
   Dashboard :{screen:Dashboard},
   Signin :{screen:Signin},
-  Signinjur : {screen : Signinjur},
-  Loginjur : {screen : Loginjur},
-  Dashboardjur : {screen : Dashboardjur},
+  Inputnews : {screen: Inputnews},
+  Profil : {screen: Profil},
+  Viewnews : {screen : Viewnews},
+  Senstreet : {screen : Senstreet},
 });
 AppRegistry.registerComponent('senorti', () => senortiNavigation);

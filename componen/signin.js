@@ -11,7 +11,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
-  AsyncStorage
+  AsyncStorage,
+  ScrollView,
 } from 'react-native';
 import { StackNavigator } from 'react-navigation';
 var{width,height}=Dimensions.get('window');
@@ -26,13 +27,13 @@ export default class Signin extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      date:"2016-05-15",
+      date:"1990-05-15",
       email : null,
       password:null,
       uid:null,
       phoneNumber:null,
       username:null,
-
+      
    
     };
 console.ignoredYellowBox = [
@@ -70,6 +71,14 @@ console.ignoredYellowBox = [
     }).then((snapshot)=>{
 
        firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password).then(() => {
+         AsyncStorage.multiSet([
+              ["userId", userId],
+              ["email", this.state.email],
+              ["password", this.state.password],
+              ["username", this.state.username],
+              ["birthday", this.state.birthday],
+              ["phoneNumber", this.state.phoneNumber]
+            ]);
 
         /** Set AsyncStorage START **/
         const { navigate } = this.props.navigation;
@@ -85,7 +94,7 @@ console.ignoredYellowBox = [
   render() {
      const { navigate } = this.props.navigation;
     return (
-          
+          <ScrollView>
           <Image source={require('./../img/FLASH.png')} style={styles.backgroundImage}>
               <View style={styles.logosign}>
                         <Image source={require('./../img/logo34.png')} style={styles.logoImage}>
@@ -159,7 +168,7 @@ console.ignoredYellowBox = [
         </TouchableOpacity>
 
           </Image>
-   
+   </ScrollView>
             );
   }
 }
